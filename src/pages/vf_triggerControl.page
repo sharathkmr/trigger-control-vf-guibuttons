@@ -1,0 +1,127 @@
+<!-- 
+Author : $harath
+-->
+
+<apex:page sidebar="false" controller="ControllingTriggerActivity" standardStylesheets="false">
+    <style>
+        .onoffswitch {
+            position: relative; width: 58px;
+            -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+        }
+        .onoffswitch-checkbox {
+            display: none;
+        }
+        .onoffswitch-label {
+            display: block; overflow: hidden; cursor: pointer;
+            border: 2px solid #999999; border-radius: 20px;
+        }
+        .onoffswitch-inner {
+            display: block; width: 200%; margin-left: -100%;
+            transition: margin 0.3s ease-in 0s;
+        }
+        .onoffswitch-inner:before, .onoffswitch-inner:after {
+            display: block; float: left; width: 50%; height: 19px; padding: 0; line-height: 19px;
+            font-size: 13px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+            box-sizing: border-box;
+        }
+        .onoffswitch-inner:before {
+            content: "ON";
+            padding-left: 6px;
+            background-color: #345AC2; color: #FFFFFF;
+        }
+        .onoffswitch-inner:after {
+            content: "OFF";
+            padding-right: 6px;
+            background-color: #CC1D1D; color: #FAF7F7;
+            text-align: right;
+        }
+        .onoffswitch-switch {
+            display: block; width: 10px; margin: 4.5px;
+            background: #FFFFFF;
+            position: absolute; top: 0; bottom: 0;
+            right: 35px;
+            border: 2px solid #999999; border-radius: 20px;
+            transition: all 0.3s ease-in 0s; 
+        }
+        .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+            margin-left: 0;
+        }
+        .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+            right: 0px; 
+        }
+    </style>
+    
+  <apex:pageBlock id="pageBlockMain">
+  <apex:form >
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+      <script>
+      
+    
+      $(window).ready(function(){
+      
+      
+      console.log('------------- Document Loaded successfully ---------------');
+      
+      <apex:repeat value="{!trigList}" var="l">
+         console.log("{!l.at.name} - {!l.enabled}");
+        if(!{!l.enabled} ) {
+            $("#onoffswitch-{!l.at.name}").prop("checked",false);
+            
+            console.log("onoffswitch-{!l.at.name} is off");
+        } else {
+                          
+        }
+              
+      </apex:repeat>
+      
+      });
+      
+      </script>
+  
+      <apex:pageBlockSection >
+      
+          <apex:pageBlockTable value="{!trigList}" var="l">
+              
+              <apex:column value="{!l.at.name}"/>
+              <apex:column value="{!l.at.TableEnumOrId}" headerValue="Object"/>
+              <apex:column headerValue="Enabled">
+                  <apex:outputText value="{!l.enabled}"/>
+              </apex:column>
+              
+              <apex:column headerValue="Enabled">
+                  
+                  <apex:inputCheckbox onclick="{!l.enabled}" value="{!l.enabled}" id="checkbox">
+                      <!-- using row number we perform operations in controller -->
+                      <apex:actionSupport action="{!updateStatus}" event="onclick" reRender="pageBlockMain">
+                           <apex:param value="{!l.count}" name="rowNum"/>   
+                      </apex:actionSupport>
+                  </apex:inputCheckbox>
+              </apex:column>
+              
+              <apex:column headerValue="On/Off">
+                  <div class="onoffswitch">
+                  
+                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="onoffswitch-{!l.at.name}" checked="true" onclick="triggerSwitchAF('{!l.count}')"/>
+                    
+                    <label class="onoffswitch-label" for="onoffswitch-{!l.at.name}">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                    
+                  </div>
+                  
+              </apex:column>
+          </apex:pageBlockTable>
+      </apex:pageBlockSection>
+      <!-- Use the action function to call apex method in javascript 
+          in action function assign the apex method to action and give a name for the action function
+          Later call the action function using the name which in return calls the apex method.
+          Action function supports ajax requests too -->
+      <apex:actionFunction action="{!triggerSwitch}" name="triggerSwitchAF" reRender="pageBlockMain">
+          <apex:param name="rowNo" value="" assignto="{!rowNumber}" />
+      </apex:actionFunction>
+              
+  </apex:form>
+  </apex:pageBlock>
+</apex:page>
